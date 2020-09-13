@@ -8,13 +8,13 @@ Installation
 Stable release
 --------------
 
-To install Mortgate Simulator, run this command in your terminal:
+To install Mortgage Simulator, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install mortgate_simulator
+    $ pip install mortgage_simulator
 
-This is the preferred method to install Mortgate Simulator, as it will always install the most recent stable release.
+This is the preferred method to install Mortgage Simulator, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -26,19 +26,19 @@ you through the process.
 From sources
 ------------
 
-The sources for Mortgate Simulator can be downloaded from the `Github repo`_.
+The sources for Mortgage Simulator can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/sofglide/mortgate_simulator
+    $ git clone git://github.com/sofglide/mortgage_simulator
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/sofglide/mortgate_simulator/tarball/master
+    $ curl -OJL https://github.com/sofglide/mortgage_simulator/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/sofglide/mortgate_simulator
-.. _tarball: https://github.com/sofglide/mortgate_simulator/tarball/master
+.. _Github repo: https://github.com/sofglide/mortgage_simulator
+.. _tarball: https://github.com/sofglide/mortgage_simulator/tarball/master

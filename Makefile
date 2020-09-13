@@ -1,85 +1,153 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
-.DEFAULT_GOAL := help
+##############################################################################################
+# PROJECT-SPECIFIC PARAMETERS                                                                #
+##############################################################################################
 
-define BROWSER_PYSCRIPT
-import os, webbrowser, sys
 
-from urllib.request import pathname2url
+PROJECT_NAME = mortgage_simulator
+PYTHON ?= python3
+SOURCE_FOLDER = mortgage_simulator
 
-webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
-endef
-export BROWSER_PYSCRIPT
+##############################################################################################
+# ENVIRONMENT SETUP                                                                          #
+##############################################################################################
 
-define PRINT_HELP_PYSCRIPT
-import re, sys
 
-for line in sys.stdin:
-	match = re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line)
-	if match:
-		target, help = match.groups()
-		print("%-20s %s" % (target, help))
-endef
-export PRINT_HELP_PYSCRIPT
+.PHONY: env-create
+env-create:
+	$(PYTHON) -m venv .venv --prompt $(PROJECT_NAME)
+	make env-update
+	#
+	# Don't forget to activate the environment before proceeding! You can run:
+	# source .venv/bin/activate
 
-BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
-help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+.PHONY: env-update
+env-update:
+	bash -c "\
+		. .venv/bin/activate; \
+		which python; \
+		which pip; \
+		pip install --upgrade -r requirements.txt; \
+		pip freeze; \
+	"
 
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
-clean-build: ## remove build artifacts
-	rm -fr build/
-	rm -fr dist/
-	rm -fr .eggs/
-	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
+.PHONY: env-delete
+env-delete:
+	rm -rf .venv
 
-clean-pyc: ## remove Python file artifacts
-	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '*.pyo' -exec rm -f {} +
-	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
 
-clean-test: ## remove test and coverage artifacts
-	rm -fr .tox/
-	rm -f .coverage
-	rm -fr htmlcov/
-	rm -fr .pytest_cache
+.PHONY: update
+update:
+	pip install --upgrade -r requirements.txt
 
-lint: ## check style with flake8
-	flake8 mortgate_simulator tests
 
-test: ## run tests quickly with the default Python
-	pytest
+##############################################################################################
+# BUILD STEPS: LINTING, TESTING, COVERAGE, DOCS                                              #
+##############################################################################################
 
-test-all: ## run tests on every Python version with tox
-	tox
 
-coverage: ## check code coverage quickly with the default Python
-	coverage run --source mortgate_simulator -m pytest
-	coverage report -m
-	coverage html
-	$(BROWSER) htmlcov/index.html
+COMMIT_HASH ?= $(shell git log --format=%h -n 1 HEAD)
+BRANCH_NAME ?= $(shell git branch | grep -e "*" | cut -d " " -f 2)
 
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/mortgate_simulator.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ mortgate_simulator
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
 
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+.PHONY: build-all
+build-all: clean gitinfo radon lint coverage docs build
 
-release: dist ## package and upload a release
-	twine upload dist/*
 
-dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
+.PHONY: check
+check: reformat radon lint
 
-install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+
+.PHONY: clean
+clean:
+	rm -f .gitinfo
+	rm -rf build dist *.egg-info
+	find $(SOURCE_FOLDER) -name __pycache__ | xargs rm -rf
+	find $(SOURCE_FOLDER) -name '*.pyc' -delete
+	rm -rf reports .coverage
+	rm -rf docs/build docs/source
+	rm -rf .*cache
+
+
+.PHONY: gitinfo
+gitinfo:
+	echo "$(COMMIT_HASH)" >  .gitinfo
+	echo "$(BRANCH_NAME)" >> .gitinfo
+
+
+.PHONY: reformat
+reformat:
+	isort $(SOURCE_FOLDER) tests
+	black $(SOURCE_FOLDER) tests
+
+
+.PHONY: lint
+lint:
+	$(PYTHON) -m pycodestyle . --exclude '.venv,setup.py,docs/*'
+	isort --check-only $(SOURCE_FOLDER) tests
+	black --check $(SOURCE_FOLDER) tests
+	pylint $(SOURCE_FOLDER)
+	pylint --disable=missing-docstring,no-self-use tests
+	mypy $(SOURCE_FOLDER)
+
+
+.PHONY: test tests
+test tests:
+	$(PYTHON) -m pytest tests/
+
+
+.PHONY: coverage
+coverage:
+	$(PYTHON) -m pytest tests/ \
+		--junitxml=reports/test-result-all.xml \
+		--cov=$(SOURCE_FOLDER) \
+		--cov-report term-missing \
+		--cov-report html:reports/coverage-all.html \
+		--cov-report xml:reports/coverage-all.xml
+
+
+.PHONY: build
+build:
+	python setup.py --quiet sdist bdist_wheel
+
+
+.PHONY: radon
+radon:
+	radon cc $(SOURCE_FOLDER) --min c
+	xenon --max-absolute C --max-modules C --max-average A $(SOURCE_FOLDER)/
+
+
+##############################################################################################
+# VERSIONING                                                                                 #
+##############################################################################################
+
+
+.PHONY: version
+version:
+	python -c "import $(SOURCE_FOLDER); print($(SOURCE_FOLDER).__version__)"
+
+
+.PHONY: bump-version-patch
+bump-version-patch:
+	# Note: You should only run this on a clean working copy
+	#       If this operation succeeds, it will create a version-bumping commit
+	bump2version patch --list
+	git log --oneline -1
+
+
+.PHONY: bump-version-minor
+bump-version-minor:
+	# Note: You should only run this on a clean working copy
+	#       If this operation succeeds, it will create a version-bumping commit
+	bump2version minor --list
+	git log --oneline -1
+
+.PHONY: bump-version-major
+bump-version-major:
+	# Note: You should only run this on a clean working copy
+	#       If this operation succeeds, it will create a version-bumping commit
+	bump2version major --list
+	git log --oneline -1
+
+

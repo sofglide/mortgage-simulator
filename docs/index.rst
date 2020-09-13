@@ -1,4 +1,4 @@
-Welcome to Mortgate Simulator's documentation!
+Welcome to Mortgage Simulator's documentation!
 ======================================
 
 .. toctree::

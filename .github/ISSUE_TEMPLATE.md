@@ -1,4 +1,4 @@
-* Mortgate Simulator version:
+* Mortgage Simulator version:
 * Python version:
 * Operating System:
 
