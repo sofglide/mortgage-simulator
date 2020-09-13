@@ -1,1 +1,1 @@
-"""Unit test package for mortgate_simulator."""
+"""Unit test package for mortgage_simulator."""

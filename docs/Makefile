@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = mortgate_simulator
+SPHINXPROJ    = mortgage_simulator
 SOURCEDIR     = .
 BUILDDIR      = _build
 

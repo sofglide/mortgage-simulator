@@ -2,15 +2,15 @@
 
 """The setup script."""
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=7.0', ]
+requirements = ['Click>=7.0', "terminaltables==3.1.*",]
 
 setup_requirements = ['pytest-runner', ]
 
@@ -31,23 +31,23 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="Mortgate simulator based on Swedish rules",
+    description="Mortgage simulator based on Swedish bank rules",
     entry_points={
         'console_scripts': [
-            'mortgate_simulator=mortgate_simulator.cli:main',
+            'mortgage_simulator=mortgage_simulator.simulate_mortgage:loan',
         ],
     },
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
-    keywords='mortgate_simulator',
-    name='mortgate_simulator',
-    packages=find_packages(include=['mortgate_simulator', 'mortgate_simulator.*']),
+    keywords='mortgage_simulator',
+    name='mortgage_simulator',
+    packages=["mortgage_simulator"],
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/sofglide/mortgate_simulator',
+    url='https://github.com/sofglide/mortgage-simulator',
     version='0.1.0',
     zip_safe=False,
 )

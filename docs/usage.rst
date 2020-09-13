@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use Mortgate Simulator in a project::
+To use Mortgage Simulator in a project::
 
-    import mortgate_simulator
+    import mortgage_simulator

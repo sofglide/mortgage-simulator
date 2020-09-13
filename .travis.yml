@@ -25,5 +25,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: sofglide/mortgate_simulator
+    repo: sofglide/mortgage_simulator
     python: 3.8
