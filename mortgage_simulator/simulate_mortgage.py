@@ -21,11 +21,11 @@ def get_monthly_starting_interest(principal, interest):
 
 
 @click.group()
-def loan():
+def loan_simulation():
     pass
 
 
-@loan.command(name="minimum_payment", help="calculate minimum required payment given amortization rate")
+@loan_simulation.command(name="minimum_payment", help="calculate minimum required payment given amortization rate")
 @click.option("-p", "--principal", type=int, required=True, help="principal")
 @click.option("-a", "--amortization_rate", type=float, required=True, help="amortization rate")
 @click.option(
@@ -52,7 +52,7 @@ def get_minimum_monthly_payment(principal, interest_rate, amortization_rate) -> 
     print(f"Minimum monthly payment: {payment:.0f} SEK")
 
 
-@loan.command("simulate", help="simulate mortgate given its parameters")
+@loan_simulation.command("simulate", help="simulate mortgage given its parameters")
 @click.option("-v", "--property_value", type=int, required=True, help="property value")
 @click.option("-d", "--down_payment", type=int, default=DEFAULT_DOWN_PAYMENT, show_default=True, help="down payment")
 @click.option(
@@ -109,26 +109,26 @@ def simulate_mortgage(
     yearly_income = monthly_income * 12
 
     simulations = SimulationReport()
-    mutuo = Mortgage(
+    loan = Mortgage(
         value=property_value,
         downpayment=down_payment,
         income=yearly_income,
         rate=interest_rate,
     )
 
-    simulation_by_payment = mutuo.simulate_by_payment(monthly_payment, title="monthly payment simulation")
+    simulation_by_payment = loan.simulate_by_payment(monthly_payment, title="monthly payment simulation")
     simulations.add_simulation(simulation_by_payment)
 
-    simulation_by_minimum_payment = mutuo.simulate_by_payment(
-        mutuo.minimum_monthly_payment, title="minimum payment simulation"
+    simulation_by_minimum_payment = loan.simulate_by_payment(
+        loan.minimum_monthly_payment, title="minimum payment simulation"
     )
     simulations.add_simulation(simulation_by_minimum_payment)
 
-    simulation_by_term = mutuo.simulate_by_term(mortgage_term, title=f"term {mortgage_term:.1f} Y")
+    simulation_by_term = loan.simulate_by_term(mortgage_term, title=f"term {mortgage_term:.1f} Y")
     simulations.add_simulation(simulation_by_term)
 
     click.echo(simulations.get_report())
 
 
 if __name__ == "__main__":
-    loan()
+    loan_simulation()
