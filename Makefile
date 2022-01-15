@@ -47,16 +47,8 @@ update:
 ##############################################################################################
 
 
-COMMIT_HASH ?= $(shell git log --format=%h -n 1 HEAD)
-BRANCH_NAME ?= $(shell git branch | grep -e "*" | cut -d " " -f 2)
-
-
 .PHONY: build-all
-build-all: clean gitinfo radon lint coverage docs build
-
-
-.PHONY: check
-check: reformat radon lint
+build-all: clean lint docs build
 
 
 .PHONY: clean
@@ -68,12 +60,6 @@ clean:
 	rm -rf reports .coverage
 	rm -rf docs/build docs/source
 	rm -rf .*cache
-
-
-.PHONY: gitinfo
-gitinfo:
-	echo "$(COMMIT_HASH)" >  .gitinfo
-	echo "$(BRANCH_NAME)" >> .gitinfo
 
 
 .PHONY: reformat
@@ -92,30 +78,14 @@ lint:
 	mypy $(SOURCE_FOLDER)
 
 
-.PHONY: test tests
-test tests:
+.PHONY: test
+test:
 	$(PYTHON) -m pytest tests/
-
-
-.PHONY: coverage
-coverage:
-	$(PYTHON) -m pytest tests/ \
-		--junitxml=reports/test-result-all.xml \
-		--cov=$(SOURCE_FOLDER) \
-		--cov-report term-missing \
-		--cov-report html:reports/coverage-all.html \
-		--cov-report xml:reports/coverage-all.xml
 
 
 .PHONY: build
 build:
 	python setup.py --quiet sdist bdist_wheel
-
-
-.PHONY: radon
-radon:
-	radon cc $(SOURCE_FOLDER) --min c
-	xenon --max-absolute C --max-modules C --max-average A $(SOURCE_FOLDER)/
 
 
 ##############################################################################################
