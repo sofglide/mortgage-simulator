@@ -34,7 +34,7 @@ setup(
     description="Mortgage simulator based on Swedish bank rules",
     entry_points={
         'console_scripts': [
-            'mortgage_simulator=mortgage_simulator.simulate_mortgage:loan',
+            'mortgage_simulator=mortgage_simulator.simulate_mortgage:loan_simulation',
         ],
     },
     install_requires=requirements,

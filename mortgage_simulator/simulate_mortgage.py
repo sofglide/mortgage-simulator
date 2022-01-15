@@ -25,12 +25,12 @@ def loan_simulation():
     pass
 
 
-@loan_simulation.command(name="minimum_payment", help="calculate minimum required payment given amortization rate")
+@loan_simulation.command(name="minimum-payment", help="calculate minimum required payment given amortization rate")
 @click.option("-p", "--principal", type=int, required=True, help="principal")
-@click.option("-a", "--amortization_rate", type=float, required=True, help="amortization rate")
+@click.option("-a", "--amortization-rate", type=float, required=True, help="amortization rate")
 @click.option(
     "-i",
-    "--interest_rate",
+    "--interest-rate",
     type=float,
     default=DEFAULT_INTEREST_RATE,
     show_default=True,
@@ -53,11 +53,11 @@ def get_minimum_monthly_payment(principal, interest_rate, amortization_rate) -> 
 
 
 @loan_simulation.command("simulate", help="simulate mortgage given its parameters")
-@click.option("-v", "--property_value", type=int, required=True, help="property value")
-@click.option("-d", "--down_payment", type=int, default=DEFAULT_DOWN_PAYMENT, show_default=True, help="down payment")
+@click.option("-v", "--property-value", type=int, required=True, help="property value")
+@click.option("-d", "--down-payment", type=int, default=DEFAULT_DOWN_PAYMENT, show_default=True, help="down payment")
 @click.option(
     "-r",
-    "--interest_rate",
+    "--interest-rate",
     type=float,
     default=DEFAULT_INTEREST_RATE,
     show_default=True,
@@ -65,7 +65,7 @@ def get_minimum_monthly_payment(principal, interest_rate, amortization_rate) -> 
 )
 @click.option(
     "-t",
-    "--mortgage_term",
+    "--mortgage-term",
     type=int,
     default=DEFAULT_MORTGAGE_TERM_IN_YEARS,
     show_default=True,
@@ -73,7 +73,7 @@ def get_minimum_monthly_payment(principal, interest_rate, amortization_rate) -> 
 )
 @click.option(
     "-i",
-    "--monthly_income",
+    "--monthly-income",
     type=int,
     default=DEFAULT_MONTHLY_INCOME,
     show_default=True,
@@ -81,7 +81,7 @@ def get_minimum_monthly_payment(principal, interest_rate, amortization_rate) -> 
 )
 @click.option(
     "-p",
-    "--monthly_payment",
+    "--monthly-payment",
     type=int,
     default=DEFAULT_MONTHLY_PAYMENT,
     show_default=True,
