@@ -9,4 +9,5 @@ pytest==6.2.*
 # project dependencies
 click
 terminaltables
+colorclass
 PyQt5

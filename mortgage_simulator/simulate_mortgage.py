@@ -132,7 +132,7 @@ def simulate_mortgage(
     simulation_by_term = loan.simulate_by_term(mortgage_term, title=f"term {mortgage_term:.1f} Y")
     simulations.add_simulation(simulation_by_term)
 
-    click.echo(simulations.get_report())
+    print(simulations.get_report())
 
 
 if __name__ == "__main__":

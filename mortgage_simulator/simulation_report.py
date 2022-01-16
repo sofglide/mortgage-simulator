@@ -5,6 +5,8 @@ from typing import List
 
 from terminaltables import DoubleTable
 
+from mortgage_simulator.utils import add_color
+
 ROW_INDEX = [
     "Simulation type",
     "Property value",
@@ -36,7 +38,7 @@ class SimulationReport:
     """
 
     def __init__(self):
-        self.columns = {row: [] for row in ROW_INDEX}
+        self.columns = {add_color(row): [] for row in ROW_INDEX}
         self.size = 0
 
     def add_simulation(self, data: List[str]):
@@ -47,7 +49,7 @@ class SimulationReport:
         """
         self.size = self.size + 1
         for i, row in enumerate(ROW_INDEX):
-            self.columns[row].append(data[i])
+            self.columns[add_color(row)].append(add_color(row, data[i]))
 
     def get_report(self) -> str:
         """

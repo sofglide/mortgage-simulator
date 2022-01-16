@@ -16,6 +16,8 @@ click==8.0.3
     # via
     #   -r requirements.in
     #   black
+colorclass==2.2.2
+    # via -r requirements.in
 iniconfig==1.1.1
     # via pytest
 isort==5.10.1

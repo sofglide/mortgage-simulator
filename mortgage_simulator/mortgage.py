@@ -7,6 +7,8 @@ import logging
 import math
 from typing import List
 
+from mortgage_simulator.utils import add_color
+
 logger = logging.getLogger(__name__)
 
 
@@ -201,7 +203,7 @@ class Mortgage:
             f"{100 * self.min_amort_rate:.2f} %",
             f"{int(self.minimum_monthly_payment):,} sek",
             f"{self.maximum_term_y:.1f} Y",
-            f"{int(monthly_payment):,} sek",
+            add_color("monthly_payment", f"{int(monthly_payment):,} sek"),
             f"{int(self.monthly_interest):,} sek",
             f"{int(amortization):,} sek",
             f"{100 * amortization_rate:.2f} %",
