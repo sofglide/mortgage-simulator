@@ -10,11 +10,19 @@ with open("README.md") as readme_file:
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
-requirements = ["Click>=7.0", "terminaltables==3.1.*", ]
+requirements = [
+    "Click>=7.0",
+    "terminaltables==3.1.*",
+    "colorclass==2.2.*",
+]
 
-setup_requirements = ["pytest-runner", ]
+setup_requirements = [
+    "pytest-runner",
+]
 
-test_requirements = ["pytest>=3", ]
+test_requirements = [
+    "pytest>=3",
+]
 
 setup(
     author="Sofiane Soussi",
@@ -32,11 +40,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     description="Mortgage simulator based on Swedish bank rules",
-    entry_points={
-        "console_scripts": [
-            "mortgage-simulator=mortgage_simulator.simulate_mortgage:loan_simulation",
-        ],
-    },
+    entry_points={"console_scripts": ["mortgage-simulator=mortgage_simulator.simulate_mortgage:loan_simulation",],},
     install_requires=requirements,
     license="MIT license",
     long_description=readme + "\n\n" + history,
