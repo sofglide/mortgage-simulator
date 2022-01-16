@@ -1,9 +1,14 @@
 """Console script for mortgage_simulator."""
+import logging
+import os
+
 import click
 
 from .mortgage import Mortgage
 from .simulation_report import SimulationReport
 from .utils import normalize_rate
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 DEFAULT_DOWN_PAYMENT = 1000000
 DEFAULT_INTEREST_RATE = 0.0150

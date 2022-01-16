@@ -7,8 +7,6 @@ import logging
 import math
 from typing import List
 
-from terminaltables import DoubleTable
-
 logger = logging.getLogger(__name__)
 
 
@@ -57,6 +55,7 @@ class Mortgage:
         else:
             amort_rate = 0.02
 
+        logger.debug(f"Loan to value ration {self.loan_to_value_ratio} requires minimum amortization {amort_rate}")
         return amort_rate
 
     @property
@@ -87,11 +86,15 @@ class Mortgage:
             amort_rate = 0.0
         else:
             amort_rate = 0.01
+
+        logger.debug(f"Loan to income ration {self.loan_to_income_ratio} requires minimum amortization {amort_rate}")
         return amort_rate
 
     @property
     def min_amort_rate(self) -> float:
-        return self.loan_to_val_amort_rate + self.income_debt_amort_rate
+        amort_rate = self.loan_to_val_amort_rate + self.income_debt_amort_rate
+        logger.debug(f"Minimum amortization rate is: {amort_rate} ")
+        return amort_rate
 
     @property
     def monthly_interest(self) -> float:
@@ -129,6 +132,10 @@ class Mortgage:
         :param monthly_payment:
         :return:
         """
+        if monthly_payment <= self.loan * self.r:
+            raise ValueError(
+                f"Monthly payment {monthly_payment} needs to be above monthly interest {self.loan * self.r}"
+            )
         loan_term = (math.log(monthly_payment / self.r) - math.log(monthly_payment / self.r - self.loan)) / math.log(
             1 + self.r
         )
@@ -208,55 +215,3 @@ class Mortgage:
         ]
 
         return data
-
-
-def get_simulation_table(
-    mortgage: Mortgage,
-    monthly_payment: float,
-    amortization: float,
-    amortization_rate: float,
-    term: float,
-    title: str,
-) -> str:
-    """
-    Mortgage info to print as table in terminal
-    :param mortgage:
-    :param monthly_payment:
-    :param amortization:
-    :param amortization_rate:
-    :param term:
-    :return:
-    """
-    mortgage_params = [
-        ["Property value", f"{int(mortgage.value):,} sek"],
-        ["Down payment", f"{int(mortgage.downpayment):,} sek"],
-        ["Loan", f"{int(mortgage.loan):,} sek"],
-        ["Interest rate", f"{100 * mortgage.rate:.2f} %"],
-        ["Loan to value ratio", f"{mortgage.loan_to_value_ratio:.2f}"],
-        ["Value to income ratio", f"{mortgage.loan_to_income_ratio:.2f}"],
-        ["Minimum amortization rate", f"{100 * mortgage.min_amort_rate:.2f} %"],
-        ["Minimum monthly payment", f"{int(mortgage.minimum_monthly_payment):,} sek"],
-        ["Maximum term", f"{mortgage.maximum_term_y:.1f}"],
-        ["Monthly payment", f"{int(monthly_payment):,} sek"],
-        ["Interest payment", f"{int(mortgage.monthly_interest):,} sek"],
-        ["Amortization", f"{int(amortization):,} sek"],
-        ["Amortization rate", f"{100 * amortization_rate:.2f} %"],
-        ["Term", f"{term:.1f} Years"],
-        ["Total principal payments", f"{int(mortgage.loan):,} sek"],
-        [
-            "Total interest payments",
-            f"{int(mortgage.total_interest(monthly_payment)):,} sek",
-        ],
-        ["Total payments", f"{int(mortgage.total_payment(monthly_payment)):,} sek"],
-        [
-            "Interest to principal",
-            f"{100 * mortgage.interest_to_principal(monthly_payment):.2f} %",
-        ],
-        ["APY", f"{100 * mortgage.apy:.2f} %"],
-        ["APR", f"{100 * mortgage.apr:.2f} %"],
-    ]
-
-    mortgage_table = DoubleTable(mortgage_params, title)
-    mortgage_table.justify_columns[1] = "right"
-
-    return mortgage_table.table
