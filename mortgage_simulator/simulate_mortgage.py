@@ -121,11 +121,11 @@ def simulate_mortgage(
         rate=interest_rate,
     )
 
-    simulation_by_payment = loan.simulate_by_payment(monthly_payment, title="monthly payment simulation")
+    simulation_by_payment = loan.simulate_by_payment(monthly_payment, title="monthly payment")
     simulations.add_simulation(simulation_by_payment)
 
     simulation_by_minimum_payment = loan.simulate_by_payment(
-        loan.minimum_monthly_payment, title="minimum payment simulation"
+        loan.minimum_monthly_payment, title="minimum payment"
     )
     simulations.add_simulation(simulation_by_minimum_payment)
 
