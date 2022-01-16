@@ -115,9 +115,9 @@ def simulate_mortgage(
 
     simulations = SimulationReport()
     loan = Mortgage(
-        value=property_value,
+        property_value=property_value,
         downpayment=down_payment,
-        income=yearly_income,
+        yearly_income=yearly_income,
         rate=interest_rate,
     )
 

@@ -15,28 +15,28 @@ class Mortgage:
     Mortgage simulator class
     """
 
-    def __init__(self, value, downpayment: float, income: float, rate: float = 0.0115):
+    def __init__(self, property_value, downpayment: float, yearly_income: float, rate: float = 0.0115):
         """
         Mortgage simulator constructor
-        :param value:
+        :param property_value:
         :param downpayment:
-        :param income:
+        :param yearly_income:
         :param rate:
         """
         self.rate = rate / (100.0 if rate > 1.0 else 1.0)
-        self.value = value
-        self.income = income if income > 1000000 else income * 12
+        self.property_value = property_value
+        self.yearly_income = yearly_income
         self.downpayment = downpayment
 
         self.check_loan_to_value_limit()
 
     @property
     def loan(self) -> float:
-        return self.value - self.downpayment
+        return self.property_value - self.downpayment
 
     @property
     def loan_to_value_ratio(self) -> float:
-        return self.loan / self.value
+        return self.loan / self.property_value
 
     @property
     def loan_to_val_amort_rate(self) -> float:
@@ -72,7 +72,7 @@ class Mortgage:
 
     @property
     def loan_to_income_ratio(self) -> float:
-        return self.loan / self.income
+        return self.loan / self.yearly_income
 
     @property
     def income_debt_amort_rate(self) -> float:
@@ -124,7 +124,7 @@ class Mortgage:
 
     def check_loan_to_value_limit(self) -> None:
         if self.loan_to_value_ratio > 0.85:
-            logger.warning("Your loan to value ratio is too large:" f" {self.loan / self.value:.2f} > 0.85")
+            logger.warning("Your loan to value ratio is too large:" f" {self.loan / self.property_value:.2f} > 0.85")
 
     def term_m(self, monthly_payment: float) -> float:
         """
@@ -192,7 +192,7 @@ class Mortgage:
         """"""
         data = [
             title,
-            f"{int(self.value):,} sek",
+            f"{int(self.property_value):,} sek",
             f"{int(self.downpayment):,} sek",
             f"{int(self.loan):,} sek",
             f"{100 * self.rate:.2f} %",
