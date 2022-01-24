@@ -5,7 +5,7 @@ Created on Sun Aug  2 20:37:24 2020
 """
 import logging
 import math
-from typing import List
+from typing import Any, Dict, List
 
 from mortgage_simulator.utils import add_color
 
@@ -33,35 +33,35 @@ class Mortgage:
         self.check_loan_to_value_limit()
 
     @property
-    def loan(self) -> float:
+    def _loan(self) -> float:
         return self.property_value - self.downpayment
 
     @property
-    def loan_to_value_ratio(self) -> float:
-        return self.loan / self.property_value
+    def _loan_to_value_ratio(self) -> float:
+        return self._loan / self.property_value
 
     @property
-    def loan_to_val_amort_rate(self) -> float:
+    def _loan_to_val_amort_rate(self) -> float:
         """
         amortization rate based on loan to value
         :return:
         """
-        if self.loan_to_value_ratio < 0:
-            raise ValueError("Negative loan to value ratio " f"{self.loan_to_value_ratio:.2f}")
-        if self.loan_to_value_ratio < 0.5:
+        if self._loan_to_value_ratio < 0:
+            raise ValueError("Negative loan to value ratio " f"{self._loan_to_value_ratio:.2f}")
+        if self._loan_to_value_ratio < 0.5:
             amort_rate = 0.0
-        elif self.loan_to_value_ratio < 0.7:
+        elif self._loan_to_value_ratio < 0.7:
             amort_rate = 0.01
-        elif self.loan_to_value_ratio < 0.85:
+        elif self._loan_to_value_ratio < 0.85:
             amort_rate = 0.02
         else:
             amort_rate = 0.02
 
-        logger.debug(f"Loan to value ration {self.loan_to_value_ratio} requires minimum amortization {amort_rate}")
+        logger.debug(f"Loan to value ration {self._loan_to_value_ratio} requires minimum amortization {amort_rate}")
         return amort_rate
 
     @property
-    def r(self):
+    def _r(self):
         return self.rate / 12.0
 
     @property
@@ -74,7 +74,7 @@ class Mortgage:
 
     @property
     def loan_to_income_ratio(self) -> float:
-        return self.loan / self.yearly_income
+        return self._loan / self.yearly_income
 
     @property
     def income_debt_amort_rate(self) -> float:
@@ -94,17 +94,17 @@ class Mortgage:
 
     @property
     def min_amort_rate(self) -> float:
-        amort_rate = self.loan_to_val_amort_rate + self.income_debt_amort_rate
+        amort_rate = self._loan_to_val_amort_rate + self.income_debt_amort_rate
         logger.debug(f"Minimum amortization rate is: {amort_rate} ")
         return amort_rate
 
     @property
     def monthly_interest(self) -> float:
-        return self.loan * self.r
+        return self._loan * self._r
 
     @property
     def minimum_amortization(self) -> float:
-        return self.loan * self.min_amort_rate / 12.0
+        return self._loan * self.min_amort_rate / 12.0
 
     @property
     def minimum_monthly_payment(self) -> float:
@@ -122,11 +122,11 @@ class Mortgage:
         return monthly_payment - self.monthly_interest
 
     def amort_rate(self, monthly_payment: float) -> float:
-        return self.amortization(monthly_payment) / self.loan * 12.0
+        return self.amortization(monthly_payment) / self._loan * 12.0
 
     def check_loan_to_value_limit(self) -> None:
-        if self.loan_to_value_ratio > 0.85:
-            logger.warning("Your loan to value ratio is too large:" f" {self.loan / self.property_value:.2f} > 0.85")
+        if self._loan_to_value_ratio > 0.85:
+            logger.warning("Your loan to value ratio is too large:" f" {self._loan / self.property_value:.2f} > 0.85")
 
     def term_m(self, monthly_payment: float) -> float:
         """
@@ -134,12 +134,12 @@ class Mortgage:
         :param monthly_payment:
         :return:
         """
-        if monthly_payment <= self.loan * self.r:
+        if monthly_payment <= self._loan * self._r:
             raise ValueError(
-                f"Monthly payment {monthly_payment} needs to be above monthly interest {self.loan * self.r}"
+                f"Monthly payment {monthly_payment} needs to be above monthly interest {self._loan * self._r}"
             )
-        loan_term = (math.log(monthly_payment / self.r) - math.log(monthly_payment / self.r - self.loan)) / math.log(
-            1 + self.r
+        loan_term = (math.log(monthly_payment / self._r) - math.log(monthly_payment / self._r - self._loan)) / math.log(
+            1 + self._r
         )
         return loan_term
 
@@ -148,16 +148,16 @@ class Mortgage:
 
     def monthly_payment(self, term_y: float) -> float:
         term_m = term_y * 12
-        return self.r * self.loan / (1 - (1 + self.r) ** (-term_m))
+        return self._r * self._loan / (1 - (1 + self._r) ** (-term_m))
 
     def total_payment(self, monthly_payment: float) -> float:
         return monthly_payment * self.term_m(monthly_payment)
 
     def total_interest(self, monthly_payment: float) -> float:
-        return self.total_payment(monthly_payment) - self.loan
+        return self.total_payment(monthly_payment) - self._loan
 
     def interest_to_principal(self, monthly_payment: float) -> float:
-        return self.total_interest(monthly_payment) / self.loan
+        return self.total_interest(monthly_payment) / self._loan
 
     def simulate_by_payment(self, monthly_payment: float = None, title: str = "") -> List[str]:
         """
@@ -188,6 +188,44 @@ class Mortgage:
         monthly_payment = self.monthly_payment(term)
         return self.simulate_by_payment(monthly_payment, title=title)
 
+    def get_payment_schedule(self, monthly_payment: int, period_months: int) -> Dict[str, List[Any]]:
+        """
+
+        :param monthly_payment:
+        :param period_months:
+        :return:
+        """
+        schedule = {
+            "year": [0],
+            "month": [0],
+            "debt ratio": [self._loan / self.property_value],
+            "month interest": [0],
+            "month amortization": [0],
+            "remaining loan": [self._loan],
+            "total paid": [self.downpayment],
+            "total interest paid": [0],
+            "total amortized": [self.downpayment],
+        }
+        print(self._loan)
+        loan_term = math.ceil(self.term_m(monthly_payment))
+        if period_months < 0 or period_months > loan_term:
+            period_months = loan_term
+
+        for m in range(1, period_months + 1):
+            month_interest = schedule["remaining loan"][-1] * self._r
+            month_amortization = monthly_payment - month_interest
+            schedule["year"].append(m // 12)
+            schedule["month"].append(m)
+            schedule["month interest"].append(month_interest)
+            schedule["month amortization"].append(month_amortization)
+            schedule["total paid"].append(schedule["total paid"][-1] + monthly_payment)
+            schedule["total interest paid"].append(schedule["total interest paid"][-1] + month_interest)
+            schedule["total amortized"].append(schedule["total amortized"][-1] + month_amortization)
+            schedule["remaining loan"].append(schedule["remaining loan"][-1] - month_amortization)
+            schedule["debt ratio"].append(schedule["remaining loan"][-1] / self.property_value)
+
+        return schedule
+
     def _get_simulation_data(
         self, monthly_payment: float, amortization: float, amortization_rate: float, term: float, title: str
     ) -> List[str]:
@@ -196,9 +234,9 @@ class Mortgage:
             title,
             f"{int(self.property_value):,} sek",
             f"{int(self.downpayment):,} sek",
-            f"{int(self.loan):,} sek",
+            f"{int(self._loan):,} sek",
             f"{100 * self.rate:.2f} %",
-            f"{self.loan_to_value_ratio * 100:.1f} %",
+            f"{self._loan_to_value_ratio * 100:.1f} %",
             f"{self.loan_to_income_ratio:.2f}",
             f"{100 * self.min_amort_rate:.2f} %",
             f"{int(self.minimum_monthly_payment):,} sek",
@@ -208,7 +246,7 @@ class Mortgage:
             f"{int(amortization):,} sek",
             f"{100 * amortization_rate:.2f} %",
             f"{term:.1f} Years",
-            f"{int(self.loan):,} sek",
+            f"{int(self._loan):,} sek",
             f"{int(self.total_interest(monthly_payment)):,} sek",
             f"{int(self.total_payment(monthly_payment)):,} sek",
             f"{100 * self.interest_to_principal(monthly_payment):.2f} %",
