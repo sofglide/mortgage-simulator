@@ -5,6 +5,7 @@ import os
 import click
 
 from .mortgage import Mortgage
+from .schedule_report import ScheduleReport
 from .simulation_report import SimulationReport
 from .utils import normalize_rate
 
@@ -113,7 +114,6 @@ def simulate_mortgage(
     interest_rate = normalize_rate(interest_rate)
     yearly_income = monthly_income * 12
 
-    simulations = SimulationReport()
     loan = Mortgage(
         property_value=property_value,
         downpayment=down_payment,
@@ -122,17 +122,90 @@ def simulate_mortgage(
     )
 
     simulation_by_payment = loan.simulate_by_payment(monthly_payment, title="monthly payment")
+    simulations = SimulationReport()
     simulations.add_simulation(simulation_by_payment)
-
-    simulation_by_minimum_payment = loan.simulate_by_payment(
-        loan.minimum_monthly_payment, title="minimum payment"
-    )
+    simulation_by_minimum_payment = loan.simulate_by_payment(loan.minimum_monthly_payment, title="minimum payment")
     simulations.add_simulation(simulation_by_minimum_payment)
 
     simulation_by_term = loan.simulate_by_term(mortgage_term, title=f"term {mortgage_term:.1f} Y")
     simulations.add_simulation(simulation_by_term)
 
     print(simulations.get_report())
+
+
+@loan_simulation.command("schedule", help="compute installments schedule")
+@click.option("-v", "--property-value", type=int, required=True, help="property value")
+@click.option("-d", "--down-payment", type=int, default=DEFAULT_DOWN_PAYMENT, show_default=True, help="down payment")
+@click.option(
+    "-r",
+    "--interest-rate",
+    type=float,
+    default=DEFAULT_INTEREST_RATE,
+    show_default=True,
+    help="interest rate",
+)
+@click.option(
+    "-i",
+    "--monthly-income",
+    type=int,
+    default=DEFAULT_MONTHLY_INCOME,
+    show_default=True,
+    help="monthly income",
+)
+@click.option(
+    "-p",
+    "--monthly-payment",
+    type=int,
+    default=DEFAULT_MONTHLY_PAYMENT,
+    show_default=True,
+    help="monthly payment",
+)
+@click.option(
+    "-p",
+    "--period-months",
+    type=int,
+    default=-1,
+    show_default=True,
+    help="number of months to simulate, set to -1 to simulate until total repayment",
+)
+def simulate_schedule(
+    property_value: int,
+    down_payment: int,
+    interest_rate: float,
+    monthly_income: int,
+    monthly_payment: int,
+    period_months: int,
+) -> None:
+    """
+    Computes at the end of every month:
+    - total paid
+    - remaining loan
+    - paid to value ratio
+    - interest paid
+    - amortization paid
+    :param property_value:
+    :param down_payment:
+    :param interest_rate:
+    :param monthly_income:
+    :param monthly_payment:
+    :param period_months:
+    :return:
+    """
+    interest_rate = normalize_rate(interest_rate)
+    yearly_income = monthly_income * 12
+
+    loan = Mortgage(
+        property_value=property_value,
+        downpayment=down_payment,
+        yearly_income=yearly_income,
+        rate=interest_rate,
+    )
+
+    payment_schedule = loan.get_payment_schedule(monthly_payment, period_months)
+
+    schedule = ScheduleReport(payment_schedule)
+    schedule_report = schedule.get_report()
+    print(schedule_report)
 
 
 if __name__ == "__main__":
