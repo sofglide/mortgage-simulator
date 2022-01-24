@@ -135,5 +135,55 @@ def simulate_mortgage(
     print(simulations.get_report())
 
 
+@loan_simulation.command("installments", help="compute installments schedule")
+@click.option("-v", "--property-value", type=int, required=True, help="property value")
+@click.option("-d", "--down-payment", type=int, default=DEFAULT_DOWN_PAYMENT, show_default=True, help="down payment")
+@click.option(
+    "-r",
+    "--interest-rate",
+    type=float,
+    default=DEFAULT_INTEREST_RATE,
+    show_default=True,
+    help="interest rate",
+)
+@click.option(
+    "-p",
+    "--monthly-payment",
+    type=int,
+    default=DEFAULT_MONTHLY_PAYMENT,
+    show_default=True,
+    help="monthly payment",
+)
+@click.option(
+    "-p",
+    "--period-months",
+    type=int,
+    default=-1,
+    show_default=True,
+    help="number of months to simulate, set to -1 to simulate until total repayment",
+)
+def simulate_mortgage(
+    property_value: int,
+    down_payment: int,
+    interest_rate: float,
+    monthly_payment: int,
+    period_months: int,
+) -> None:
+    """
+    Computes at the end of every month:
+    - total paid
+    - remaining loan
+    - interest paid
+    - amortization paid
+    :param property_value:
+    :param down_payment:
+    :param interest_rate:
+    :param monthly_payment:
+    :param period_months:
+    :return:
+    """
+    return
+
+
 if __name__ == "__main__":
     loan_simulation()
