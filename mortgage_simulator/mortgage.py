@@ -206,7 +206,6 @@ class Mortgage:
             "total interest paid": [0],
             "total amortized": [self.downpayment],
         }
-        print(self._loan)
         loan_term = math.ceil(self.term_m(monthly_payment))
         if period_months < 0 or period_months > loan_term:
             period_months = loan_term

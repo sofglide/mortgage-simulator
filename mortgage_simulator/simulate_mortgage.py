@@ -161,7 +161,7 @@ def simulate_mortgage(
     help="monthly payment",
 )
 @click.option(
-    "-p",
+    "-m",
     "--period-months",
     type=int,
     default=-1,
