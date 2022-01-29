@@ -213,7 +213,7 @@ class Mortgage:
         for m in range(1, period_months + 1):
             month_interest = schedule["remaining loan"][-1] * self._r
             month_amortization = monthly_payment - month_interest
-            schedule["year"].append(m // 12)
+            schedule["year"].append((m - 1) // 12 + 1)
             schedule["month"].append(m)
             schedule["month interest"].append(month_interest)
             schedule["month amortization"].append(month_amortization)
