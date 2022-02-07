@@ -18,3 +18,6 @@ Install the package with `pip install dist/mortgage-simulator-0.1.0.tar.gz`
   ```python
    mortgage-simulator minimum_payment -p <LOAN AMOUNT> -a <AMORTIZATION RATE> -i <INTEREST RATE>
   ```
+![Help](images/help.png)
+![Simulation](images/simulate.png)
+![Schedule](images/schedule.png)
