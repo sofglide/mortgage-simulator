@@ -11,6 +11,8 @@ from mortgage_simulator.utils import add_color
 
 logger = logging.getLogger(__name__)
 
+TAX_DEDUCTION_RATE = 0.3
+
 
 class Mortgage:
     """
@@ -121,6 +123,10 @@ class Mortgage:
     def amortization(self, monthly_payment: float) -> float:
         return monthly_payment - self.monthly_interest
 
+    @property
+    def tax_deduction(self) -> float:
+        return self.monthly_interest * TAX_DEDUCTION_RATE
+
     def amort_rate(self, monthly_payment: float) -> float:
         return self.amortization(monthly_payment) / self._loan * 12.0
 
@@ -205,6 +211,7 @@ class Mortgage:
             "total paid": [self.downpayment],
             "total interest paid": [0],
             "total amortized": [self.downpayment],
+            "total tax return": [0],
         }
         loan_term = math.ceil(self.term_m(monthly_payment))
         if period_months < 0 or period_months > loan_term:
@@ -220,6 +227,7 @@ class Mortgage:
             schedule["total paid"].append(schedule["total paid"][-1] + monthly_payment)
             schedule["total interest paid"].append(schedule["total interest paid"][-1] + month_interest)
             schedule["total amortized"].append(schedule["total amortized"][-1] + month_amortization)
+            schedule["total tax return"].append(schedule["total tax return"][-1] + month_interest * TAX_DEDUCTION_RATE)
             schedule["remaining loan"].append(schedule["remaining loan"][-1] - month_amortization)
             schedule["debt ratio"].append(schedule["remaining loan"][-1] / self.property_value)
 
@@ -238,10 +246,13 @@ class Mortgage:
             f"{self._loan_to_value_ratio * 100:.1f} %",
             f"{self.loan_to_income_ratio:.2f}",
             f"{100 * self.min_amort_rate:.2f} %",
+            f"{int(self.minimum_amortization):,} sek",
             f"{int(self.minimum_monthly_payment):,} sek",
             f"{self.maximum_term_y:.1f} Y",
             add_color("monthly_payment", f"{int(monthly_payment):,} sek"),
             f"{int(self.monthly_interest):,} sek",
+            f"{int(self.tax_deduction):,} sek",
+            f"{int(self.monthly_interest - self.tax_deduction):,} sek",
             f"{int(amortization):,} sek",
             f"{100 * amortization_rate:.2f} %",
             f"{term:.1f} Years",

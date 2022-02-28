@@ -42,4 +42,5 @@ def _reformat_data(data: Dict[str, Any]) -> Dict[str, List[str]]:
     data_f["total paid"] = [f"{round(t):,}" for t in data["total paid"]]
     data_f["total interest paid"] = [f"{round(i):,}" for i in data["total interest paid"]]
     data_f["total amortized"] = [f"{round(t):,}" for t in data["total amortized"]]
+    data_f["total tax return"] = [f"{round(t):,}" for t in data["total tax return"]]
     return data_f
