@@ -35,7 +35,7 @@ def _reformat_data(data: Dict[str, Any]) -> Dict[str, List[str]]:
     data_f = dict()
     data_f["year"] = [f"{y:-2}" for y in data["year"]]
     data_f["month"] = [f"{m:-2}" for m in data["month"]]
-    data_f["debt ratio"] = [f"{r:.2f} %" for r in data["debt ratio"]]
+    data_f["debt ratio"] = [f"{r * 100:.1f} %" for r in data["debt ratio"]]
     data_f["month interest"] = [f"{round(mi):,}" for mi in data["month interest"]]
     data_f["month amortization"] = [f"{round(mi):,}" for mi in data["month amortization"]]
     data_f["remaining loan"] = [f"{round(r):,}" for r in data["remaining loan"]]
