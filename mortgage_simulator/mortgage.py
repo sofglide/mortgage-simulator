@@ -19,7 +19,7 @@ class Mortgage:
     Mortgage simulator class
     """
 
-    def __init__(self, property_value, downpayment: float, yearly_income: float, rate: float = 0.0115):
+    def __init__(self, property_value: float, downpayment: float, yearly_income: float, rate: float = 0.0115) -> None:
         """
         Mortgage simulator constructor
         :param property_value:
@@ -63,15 +63,15 @@ class Mortgage:
         return amort_rate
 
     @property
-    def _r(self):
+    def _r(self) -> float:
         return self.rate / 12.0
 
     @property
-    def apy(self):
+    def apy(self) -> float:
         return (1 + self.rate / 12.0) ** 12 - 1.0
 
     @property
-    def apr(self):
+    def apr(self) -> float:
         return self.rate
 
     @property
@@ -201,7 +201,7 @@ class Mortgage:
         :param period_months:
         :return:
         """
-        schedule = {
+        schedule: Dict[str, List[float]] = {
             "year": [0],
             "month": [0],
             "debt ratio": [self._loan / self.property_value],

@@ -1,7 +1,7 @@
 """
 report generation
 """
-from typing import List
+from typing import Dict, List
 
 from terminaltables import DoubleTable
 
@@ -40,11 +40,11 @@ class SimulationReport:
     Simulation report generator
     """
 
-    def __init__(self):
-        self.columns = {add_color(row): [] for row in ROW_INDEX}
+    def __init__(self) -> None:
+        self.columns: Dict[str, List[str]] = {add_color(row): [] for row in ROW_INDEX}
         self.size = 0
 
-    def add_simulation(self, data: List[str]):
+    def add_simulation(self, data: List[str]) -> None:
         """
         Add simulation to report
         :param data:

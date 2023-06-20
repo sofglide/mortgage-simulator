@@ -18,16 +18,16 @@ DEFAULT_MONTHLY_INCOME = 40000
 DEFAULT_MONTHLY_PAYMENT = 10000
 
 
-def get_minimum_monthly_amortization(principal, amortization_rate):
+def get_minimum_monthly_amortization(principal: float, amortization_rate: float) -> float:
     return amortization_rate / 12 * principal
 
 
-def get_monthly_starting_interest(principal, interest):
+def get_monthly_starting_interest(principal: float, interest: float) -> float:
     return interest / 12 * principal
 
 
 @click.group()
-def loan_simulation():
+def loan_simulation() -> None:
     pass
 
 
@@ -42,7 +42,7 @@ def loan_simulation():
     show_default=True,
     help="interest rate",
 )
-def get_minimum_monthly_payment(principal, interest_rate, amortization_rate) -> None:
+def get_minimum_monthly_payment(principal: float, interest_rate: float, amortization_rate: float) -> None:
     """
     Calculate minimum payment
     :param principal:
