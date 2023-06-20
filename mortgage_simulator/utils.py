@@ -20,7 +20,7 @@ def normalize_rate(rate: float) -> float:
     :return:
     """
     if rate > 100:
-        raise Exception("Invalid interest rate")
+        raise ValueError("Invalid interest rate")
     return rate / 100 if rate > 0.5 else rate
 
 
